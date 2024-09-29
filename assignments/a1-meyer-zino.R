@@ -47,3 +47,15 @@ inverse_matrix <- solve(matrix_2_2)
 print(inverse_matrix)
 
 
+# ---------------
+# 2.3 Write a computer code to solve the following linear system of
+# equations Ax = b, where A is a 3x3 matrix and b is a 3x1 vector:
+
+A <- matrix(c(1, 2, 3,
+              4, 5, 6,
+              7, 8, 0),
+            nrow = 3, byrow = TRUE)
+b <- c(1, -1, 0)
+x <- solve(A, b)
+print(x)
+
