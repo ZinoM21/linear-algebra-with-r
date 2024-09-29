@@ -33,3 +33,17 @@ data_2000_2008 <- dec_data[121:129]
 row.names(data_2000_2008) <- c("San Diego", "Berlin", "Tokyo", "Auckland")
 colnames(data_2000_2008) <- 2000:2008
 data_2000_2008
+
+
+# ------------------------
+# 2.2 Write a computer code to find the inverse of the following matrix.
+matrix_2_2 <- matrix(c(1.7, -0.7, 1.3,
+                       -1.6, -1.4, 0.4,
+                       -1.5, -0.3, 0.6),
+                     nrow = 3,
+                     byrow = TRUE)
+
+inverse_matrix <- solve(matrix_2_2)
+print(inverse_matrix)
+
+
