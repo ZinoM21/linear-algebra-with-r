@@ -17,17 +17,19 @@ data_2_1 <- read.csv("data/NOAAGlobalT.csv", header = TRUE)
 dim(data_2_1)
 
 # b)
-sd_data <- data_2_1[1777, ] # 1777 is the row number for San Diego data
-# Note: use c(1777, 2000, 2100, 2200) to select 4 different locations
+# Select San Diego, Berlin, Tokyo, Auckland
+global_data <- data_2_1[c(1777, 2019, 1828, 755), ]
 
-dec_cols <- seq(15, ncol(sd_data), by = 12) # remove cols 1-3: i LAT LON
-sd_dec <- sd_data[, dec_cols]
+# Extract December data columns (every 12th column & without first 3 columns)
+dec_cols <- seq(15, ncol(global_data), by = 12)
 
-sd_dec_2000_2008 <- sd_dec[121:129] # choosing years 2000-2008
+# Get december data only
+dec_data <- global_data[, dec_cols]
 
-row.names(sd_dec_2000_2008) <- c("San Diego")
-# use c("San Diego", "Location2", "Location3", "Location4") to name all rows
-colnames(sd_dec_2000_2008) <- 2000:2008
-sd_dec_2000_2008
+# Extract years 2000-2008
+data_2000_2008 <- dec_data[121:129]
 
-darwin_data
+# Set row and column names
+row.names(data_2000_2008) <- c("San Diego", "Berlin", "Tokyo", "Auckland")
+colnames(data_2000_2008) <- 2000:2008
+data_2000_2008
