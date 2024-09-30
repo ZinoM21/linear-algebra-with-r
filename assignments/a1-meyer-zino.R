@@ -139,11 +139,15 @@ data_2000_2008
 
 # ------------------------
 # 2.2 Write a computer code to find the inverse of the following matrix.
-matrix_2_2 <- matrix(c(1.7, -0.7, 1.3,
-                       -1.6, -1.4, 0.4,
-                       -1.5, -0.3, 0.6),
-                     nrow = 3,
-                     byrow = TRUE)
+matrix_2_2 <- matrix(
+  c(
+    1.7, -0.7, 1.3,
+    -1.6, -1.4, 0.4,
+    -1.5, -0.3, 0.6
+  ),
+  nrow = 3,
+  byrow = TRUE
+)
 
 inverse_matrix <- solve(matrix_2_2)
 print(inverse_matrix)
@@ -153,10 +157,14 @@ print(inverse_matrix)
 # 2.3 Write a computer code to solve the following linear system of
 # equations Ax = b, where A is a 3x3 matrix and b is a 3x1 vector:
 
-A <- matrix(c(1, 2, 3,
-              4, 5, 6,
-              7, 8, 0),
-            nrow = 3, byrow = TRUE)
+A <- matrix(
+  c(
+    1, 2, 3,
+    4, 5, 6,
+    7, 8, 0
+  ),
+  nrow = 3, byrow = TRUE
+)
 b <- c(1, -1, 0)
 x <- solve(A, b)
 print(x)
