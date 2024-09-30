@@ -59,3 +59,16 @@ b <- c(1, -1, 0)
 x <- solve(A, b)
 print(x)
 
+# --------------
+# 2.7 b)
+
+A <- matrix(c(0, 4, -2, -7), nrow = 2, byrow = TRUE)
+
+# eigenvalues & vectors:
+eig <- eigen(A)
+eigenvalues <- eig$values
+eigenvectors <- eig$vectors
+
+# Get unit eigenvectors by normalizing (divide by magnitude)
+unit_eigenvectors <- apply(eigenvectors, 2, function(v) v / sqrt(sum(v^2)))
+unit_eigenvectors
