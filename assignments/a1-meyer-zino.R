@@ -4,8 +4,42 @@
 # 1.2 Use R and the updated Darwin and Tahiti standardized SLP data to repro-
 # duce the EOFs and PCs and to plot the EOF pattern maps and PC time series.
 
-darwin_data <- read.table("data/PSTANDdarwin.txt", header = FALSE)
-tahiti_data <- read.table("data/PSTANDtahiti.txt", header = FALSE)
+darwin_stand <- read.table("data/PSTANDdarwin.txt",
+  header = FALSE, row.names = 1
+)
+darwin_years <- as.numeric(rownames(darwin_stand)) # keep the years for the plot
+
+darwin_stand <- as.matrix(darwin_stand)
+darwin_svd <- svd(darwin_stand)
+darwin_eofs <- darwin_svd$u
+
+plot(darwin_years,
+  darwin_eofs[, 1],
+  type = "l",
+  main = "First EOF",
+  xlab = "Year",
+  ylab = "EOF Amplitude"
+)
+
+
+tahiti_stand <- read.table("data/PSTANDtahiti.txt",
+  header = FALSE, row.names = 1
+)
+tahiti_years <- as.numeric(rownames(tahiti_stand))
+
+tahiti_stand <- as.matrix(tahiti_stand)
+tahiti_svd <- svd(tahiti_stand)
+tahiti_eofs <- tahiti_svd$u
+
+plot(tahiti_years,
+  tahiti_eofs[, 1],
+  type = "l",
+  main = "First EOF",
+  xlab = "Year",
+  ylab = "EOF Amplitude"
+)
+
+
 # ------------------------
 # 1.8
 # a)
@@ -71,6 +105,9 @@ dev.off()
 # rise and fall from -0.6 to 0.5. We just see an excerpt from this
 # larger pattern.
 # I would guess that one oscillation cycle is roughly 6-8 years long.
+
+
+
 # ------------------------
 # 2.1 Write a computer code to
 # a) Read the NOAAGlobalTemp data file, and
