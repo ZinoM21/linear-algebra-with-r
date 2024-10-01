@@ -1,43 +1,46 @@
 # Assignment 1
 
 
+
+# ------------------------
 # 1.2 Use R and the updated Darwin and Tahiti standardized SLP data to repro-
 # duce the EOFs and PCs and to plot the EOF pattern maps and PC time series.
 
+# Load data & keep years as row names
 darwin_stand <- read.table("data/PSTANDdarwin.txt",
   header = FALSE, row.names = 1
 )
-darwin_years <- as.numeric(rownames(darwin_stand)) # keep the years for the plot
+years <- as.numeric(rownames(darwin_stand)) # save years for later
 
-darwin_stand <- as.matrix(darwin_stand)
-darwin_svd <- svd(darwin_stand)
-darwin_eofs <- darwin_svd$u
+# Choose dec monthly data
+darwin_dec <- t(darwin_stand[, 12])
+colnames(darwin_dec) <- rownames(darwin_stand[, 12, drop = FALSE])
 
-plot(darwin_years,
-  darwin_eofs[, 1],
-  type = "l",
-  main = "First EOF",
-  xlab = "Year",
-  ylab = "EOF Amplitude"
-)
-
-
+# Same for tahiti
 tahiti_stand <- read.table("data/PSTANDtahiti.txt",
   header = FALSE, row.names = 1
 )
-tahiti_years <- as.numeric(rownames(tahiti_stand))
+tahiti_dec <- t(tahiti_stand[, 12])
+colnames(tahiti_dec) <- rownames(tahiti_stand[, 12, drop = FALSE])
 
-tahiti_stand <- as.matrix(tahiti_stand)
-tahiti_svd <- svd(tahiti_stand)
-tahiti_eofs <- tahiti_svd$u
+# Create a 2 by 65 space-time matrix from darwin and tahiti deceember data
+da_ta <- rbind(darwin_dec, tahiti_dec)
+dim(da_ta)
 
-plot(tahiti_years,
-  tahiti_eofs[, 1],
-  type = "l",
-  main = "First EOF",
-  xlab = "Year",
-  ylab = "EOF Amplitude"
-)
+# Calculate the SVD
+da_ta_svd <- svd(da_ta)
+U <- da_ta_svd$u
+V <- t(da_ta_svd$v)
+
+# Plot the EOF pattern maps
+
+
+# Plot the PC time series with matrix V
+png("images/pc-time-series-1-2.png", width = 800, height = 600)
+plot(years, V[1, ], type = "l", col = "red", xlab = "Year", ylab = "PC", main = "PC Time Series")
+lines(years, V[2, ], type = "l", col = "blue")
+legend("topright", legend = c("PC1", "PC2"), col = c("red", "blue"), lty = 1)
+dev.off()
 
 
 # ------------------------
