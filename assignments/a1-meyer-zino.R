@@ -26,20 +26,91 @@ colnames(tahiti_dec) <- rownames(tahiti_stand[, 12, drop = FALSE])
 # Create a 2 by 65 space-time matrix from darwin and tahiti deceember data
 da_ta <- rbind(darwin_dec, tahiti_dec)
 dim(da_ta)
+da_ta
 
 # Calculate the SVD
 da_ta_svd <- svd(da_ta)
 U <- da_ta_svd$u
 V <- t(da_ta_svd$v)
 
-# Plot the EOF pattern maps
+### Plot the EOF pattern maps
+eof1 <- U[1, ]
+eof2 <- U[2, ]
+
+library(maps)
+library(mapdata)
+
+# Longitude and latitude for Darwin and Tahiti
+locations <- data.frame(
+  name = c("Darwin", "Tahiti"),
+  lon = c(130.84, 210.58),
+  lat = c(-12.46, -17.65)
+)
+
+# Initiate plot
+plot.new()
+par(mfrow = c(2, 1))
+par(mar = c(0, 0, 0, 0)) # Zero space between (a) and (b)
+
+# Mode 1 / EOF 1
+map(database = "world2Hires", ylim = c(-70, 70), mar = c(0, 0, 0, 0))
+grid(nx = 12, ny = 6)
+points(locations$lon, locations$lat,
+  pch = 19, col = c("blue", "red"), cex = 1.5
+)
+text(locations$lon, locations$lat,
+  labels = paste0(locations$name, " ", round(eof1, 2)),
+  col = "blue", pos = 1, cex = 1
+)
+axis(2,
+  at = seq(-70, 70, 20),
+  col.axis = "black", tck = -0.05, las = 2, line = -0.9, lwd = 0
+)
+axis(1,
+  at = seq(0, 360, 60),
+  col.axis = "black", tck = -0.05, las = 1, line = -0.9, lwd = 0
+)
+text(180, -50, "SLP Anomalies Darwin and Tahiti Mode 1",
+  col = "purple", cex = 1.3
+)
+box()
 
 
-# Plot the PC time series with matrix V
-png("images/pc-time-series-1-2.png", width = 800, height = 600)
-plot(years, V[1, ], type = "l", col = "red", xlab = "Year", ylab = "PC", main = "PC Time Series")
+# Mode 2 / EOF 2
+map(database = "world2Hires", ylim = c(-70, 70), mar = c(0, 0, 0, 0))
+grid(nx = 12, ny = 6)
+points(locations$lon, locations$lat,
+  pch = 19, col = c("blue", "red"), cex = 1.5
+)
+text(locations$lon, locations$lat,
+  labels = paste0(locations$name, " ", round(eof2, 2)),
+  col = "blue", pos = 1, cex = 1
+)
+axis(2,
+  at = seq(-70, 70, 20),
+  col.axis = "black", tck = -0.05, las = 2, line = -0.9, lwd = 0
+)
+axis(1,
+  at = seq(0, 360, 60),
+  col.axis = "black", tck = -0.05, las = 1, line = -0.9, lwd = 0
+)
+text(180, -50, "SLP Anomalies Darwin and Tahiti Mode 1",
+  col = "purple", cex = 1.3
+)
+box()
+
+dev.off()
+
+
+### Plot the PC time series with matrix V
+# png("images/pc-time-series-1-2.png", width = 800, height = 600)
+plot(years, V[1, ],
+  type = "l", col = "red",
+  xlab = "Year", ylab = "PC", main = "PC Time Series"
+)
 lines(years, V[2, ], type = "l", col = "blue")
 legend("topright", legend = c("PC1", "PC2"), col = c("red", "blue"), lty = 1)
+
 dev.off()
 
 
