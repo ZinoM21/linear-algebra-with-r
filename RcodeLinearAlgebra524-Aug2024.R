@@ -558,47 +558,58 @@ summary(fit)
 #Ref: imager: an R package for image processing
 #https://dahtah.github.io/imager/imager.html 
 
-setwd("~/Documents/04-studies/02-SDSU/LinAlg")
 install.packages('imager') #run this if not installed yet
 library(imager)
-dat <- load.image('golf.jpeg') #355 KB file size
+dat <- load.image('images/golf.jpeg') #355 KB file size
+
+# Flip the image horizontally
+dat <- imrotate(dat, angle = 90)
+
 dim(dat)
-#[1] 430 460   1   3
-#430 rows and 460 columns, 430*460 = 197,800 pixels
-#1 photo frame, 3 RGB colors 
-#If a video, 1 will become 150 frames or more
+# [1] 3024 4032   1   3
+# 3024 rows and 4032 columns, 3024*4032 = 12,192,768 pixels
+# 1 photo frame, 3 RGB colors 
+# If a video, 1 will become 150 frames or more
 
+# Show part of the dat
 dat[1:3, 1:4,1,1]
-#Show part of the daat
 
-#plot the color figure
-
+# Plot the color figure
 plot(dat, 
-     xlim = c(0, 4032), ylim = c(0, 3024),
+     xlim = c(0, 3024), ylim = c(0, 4032),
      main = 'Golfing :D')
 
-#Make the photo black-and-white
-graydat = grayscale(dat)
-dim(graydat)
-#[1] 430 460   1   1
-#430 rows and 460 columns,  1 photo frame, 1 grayscale [0, 1]
-#plot the gray b/w photo
-plot(graydat, 
-     xlim = c(0, 430), ylim = c(0, 460),
-     main = 'B/W Gray Sam')
-#Plot the color and b/w photos together
-par(mfrow = c(1, 2))
-plot(dat, 
-     xlim = c(0, 430), ylim = c(0, 460),
-     main = 'Color Sam')
-plot(graydat, 
-     xlim = c(0, 430), ylim = c(0, 460),
-     main = 'B/W Sam')
 dev.off()
 
-#SVD analysis of the grayscale data
-svdDat = svd(graydat)
-SVDd = svdDat$d
+# Show the image with only one color value (3 for red, 2 for )
+image(dat[, , 1,3])
+dev.off()
+
+# Make the photo black-and-white / grayscale
+graydat <- grayscale(dat)
+dim(graydat)
+#[1] 3024 4032   1   1 -> 1 grayscale [0, 1]
+
+# plot the gray b/w photo
+plot(graydat, 
+     xlim = c(0, 3024), ylim = c(0, 4032),
+     main = "B/W Zino Golf")
+dev.off()
+
+#Plot the color and b/w photos together
+par(mfrow = c(1, 2))
+plot(dat,
+     xlim = c(0, 3024), ylim = c(0, 4032),
+     main = "Color Golfo")
+
+plot(graydat,
+     xlim = c(0, 3024), ylim = c(0, 4032),
+     main = "B/W Golfo")
+dev.off()
+
+# SVD analysis of the grayscale data
+svdDat <- svd(graydat)
+SVDd <- svdDat$d
 percentD = 100*(SVDd^2)/sum(SVDd^2)
 cumpercentD = cumsum(percentD)
 modeK = 1:length(SVDd)
@@ -612,6 +623,7 @@ K = 20
 lam = (svdDat$d)^2
 lamK=lam[1:K]
 lamK
+
 #setEPS() #Plot the figure and save the file
 #postscript("fig0608.eps", width = 6, height = 4)
 par(mar=c(4,4,2,4), mgp=c(2.2,0.7,0))
@@ -635,7 +647,7 @@ axis(4, col="blue", col.axis="blue", mgp=c(3,0.7,0))
 mtext("Cumulative Variance [%]",col="blue", 
       cex=1.2, side=4,line=2)
 
-#Reconstructing b/w photo from SVD modes
+# Reconstructing b/w photo from SVD modes
 U = svdDat$u
 V = svdDat$v
 D = diag(svdDat$d)
