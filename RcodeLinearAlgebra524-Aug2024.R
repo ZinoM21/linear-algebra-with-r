@@ -763,6 +763,7 @@ eigen(A)
 #[1,] 0.7071068 -0.7071068
 #[2,] 0.7071068  0.7071068
 
+# Plot Fig. 2.2
 #R plot eigenvector v vs a non-eigenvector u
 setwd('/Users/sshen/LinAlg')
 setEPS() #Plot the figure and save the file
@@ -774,16 +775,16 @@ plot(9,9,
      xlim = c(0,3), ylim=c(0,3),
      xlab = bquote(x[1]), ylab = bquote(x[2]))
 arrows(0,0, 1,0, length = 0.25, 
-       angle = 8, lwd = 5, col = 'blue')
+       angle = 15, lwd = 5, col = 'blue')
 arrows(0,0, 1,2, length = 0.3, 
-       angle = 8, lwd = 2, col = 'blue',  lty = 3)
+       angle = 15, lwd = 3, col = 'blue',  lty = 3)
 arrows(0,0, 1,1, length = 0.25, 
-       angle = 8, lwd = 5, col='red') 
+       angle = 15, lwd = 5, col='red') 
 arrows(0,0, 3,3, length = 0.3, 
-       angle = 8, lwd = 2, col='red', lty = 3)
+       angle = 15, lwd = 3, col='red', lty = 3)
 text(1.4,0.1, 'Non-eigenvector u', cex =1.4, col = 'blue')
 text(1.0,2.1, 'Au', cex =1.4, col = 'blue')
-text(1.5,0.9, 'Eigenvector v', cex =1.4, col = 'red')
+text(1.5,0.9, 'Eigenvector v', cex =1.4, col = 'red')xq
 text(2.8, 2.95, 'Av', cex =1.4, col = 'red')
 dev.off()
 
@@ -1538,7 +1539,6 @@ kmeans(mydata, 2)
 #
 #
 # R plot Fig. 9.1: K-means for N = 3 and K = 2
-setwd("~/climstats")
 N = 3 #The number of data points
 K = 2 #Assume K clusters
 mydata = matrix(c(1, 1, 2, 1, 3, 3.5), 
@@ -1571,34 +1571,39 @@ text(3, 3.3, bquote(P[3]), cex = 1.4, col = 'skyblue')
 #
 #R for Fig. 9.2: K-means clustering for 2001 daily weather 
 #data at Miami International Airport, Station ID USW00012839
-setwd("~/climstats")
 dat = read.csv("data/MiamiIntlAirport2001_2020.csv", 
                header=TRUE)
 dim(dat)
 #[1] 7305   29
 tmin = dat[,'TMIN']
 wdf2 = dat[,'WDF2']
+
 # plot the scatter diagram Tmin vs WDF2
-setEPS() #Plot the data of 150 observations
-postscript("fig0902a.eps",  width=5, height=5)
+#setEPS() #Plot the data of 150 observations
+#postscript("fig0902a.eps",  width=5, height=5)
 par(mar=c(4.5, 4.5, 2, 4.5))
 plot(tmin[2:366], wdf2[2:366], 
      pch =16, cex = 0.5,
      xlab = 'Tmin [deg C]',
-     ylab = 'Wind Direction [deg]', grid())
+     ylab = 'Wind Direction [deg]', 
+     type = 'p')
 title('(a) 2001 Daily Miami Tmin vs WDF2', cex.main = 0.9, line = 1)
 axis(4, at = c(0, 45, 90, 135, 180, 225, 270, 315, 360),
      lab = c('N', 'NE', 'E', 'SE', 'S', 'SW',  'W', 'NW', 'N'))
 mtext('Wind Direction', side = 4, line =3)
 dev.off()
+
+
 #K-means clustering 
 K = 2 #assuming K = 2, i.e., 2 clusters
 mydata = cbind(tmin[2:366], wdf2[2:366])
 fit = kmeans(mydata, K) # K-means clustering
+
 #Output the coordinates of the cluster centers
 fit$centers 
 #1 18.38608 278.8608
 #2 21.93357 103.9161
+
 fit$tot.withinss # total WCSS
 #[1] 457844.9 for # the value may vary for each run
 
@@ -1622,7 +1627,6 @@ mtext('Wind Direction', side = 4, line =3)
 
 #
 #R plot Fig. 9.3: tWCSS(K) and pWCSS(K)
-setwd("~/climstats")
 dat = read.csv("data/MiamiIntlAirport2001_2020.csv", 
                header=TRUE)
 dim(dat)
