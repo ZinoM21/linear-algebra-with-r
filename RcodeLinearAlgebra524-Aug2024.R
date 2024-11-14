@@ -1613,16 +1613,20 @@ names(mycluster)<-c('Tmin [deg C]',
                     'Wind Direction [deg]',
                     'Cluster')
 library(animation)
-par(mar = c(4.5, 4.5, 2, 4.5))
-kmeans.ani(mycluster, centers = K, pch=1:K, col=1:K,
-           hints = '')
-title(main=
-        "(b) K-means Clusters for Daily Tmin vs WDF2", 
-      cex.main = 0.8)
-axis(4, at = c(0, 45, 90, 135, 180, 225, 270, 315, 360),
-     lab = c('N', 'NE', 'E', 'SE', 'S', 'SW',  'W', 'NW', 'N'))
-mtext('Wind Direction', side = 4, line =3)
+kmeans_animation <- function() {
+  par(mar = c(4.5, 4.5, 2, 4.5))
+  kmeans.ani(mycluster, centers = K, pch=1:K, col=1:K, hints = '')
+  title(main = "(b) K-means Clusters for Daily Tmin vs WDF2", cex.main = 0.8)
+  axis(4, at = c(0, 45, 90, 135, 180, 225, 270, 315, 360),
+       lab = c('N', 'NE', 'E', 'SE', 'S', 'SW',  'W', 'NW', 'N'))
+  mtext('Wind Direction', side = 4, line = 3)
+}
 
+# Run this to see the animation
+kmeans_animation()
+
+# Run this to save the animation
+saveGIF(kmeans_animation(), movie.name = "kmeans_anim_miami_temp_wind.gif", interval = 0.1)
 
 
 #
