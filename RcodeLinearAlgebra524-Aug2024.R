@@ -1499,7 +1499,7 @@ dev.off()
 
 #
 #tWCSS calculation for N = 3 and K = 2
-N = 3; K =2
+N = 3; K = 2
 mydata <- matrix(c(1, 1, 2, 1, 3, 3.5), 
                  nrow = N, byrow = TRUE)
 x1 = mydata[1, ]
@@ -1543,6 +1543,7 @@ N = 3 #The number of data points
 K = 2 #Assume K clusters
 mydata = matrix(c(1, 1, 2, 1, 3, 3.5), 
                 nrow = N, byrow = TRUE)
+mydata
 Kclusters = kmeans(mydata, K) 
 Kclusters #gives the K-means results, 
 #e.g., cluster centers and WCSS 
@@ -1582,7 +1583,7 @@ wdf2 = dat[,'WDF2']
 #setEPS() #Plot the data of 150 observations
 #postscript("fig0902a.eps",  width=5, height=5)
 par(mar=c(4.5, 4.5, 2, 4.5))
-plot(tmin[2:366], wdf2[2:366], 
+plot(tmin[1:365], wdf2[1:365], 
      pch =16, cex = 0.5,
      xlab = 'Tmin [deg C]',
      ylab = 'Wind Direction [deg]', 
@@ -1594,10 +1595,14 @@ mtext('Wind Direction', side = 4, line =3)
 dev.off()
 
 
+plot(tmin[1:365], type="o")
+plot(wdf2[1:365], type="o")
+
 #K-means clustering 
 K = 2 #assuming K = 2, i.e., 2 clusters
-mydata = cbind(tmin[2:366], wdf2[2:366])
+mydata = cbind(tmin[1:365], wdf2[1:365])
 fit = kmeans(mydata, K) # K-means clustering
+fit$totss
 
 #Output the coordinates of the cluster centers
 fit$centers 
@@ -1638,13 +1643,13 @@ dim(dat)
 tmin = dat[,'TMIN']
 tmax = dat[,'TMAX']
 wdf2 = dat[,'WDF2']
-mydata = cbind(tmin[2:366], wdf2[2:366])
-twcss = c()
+mydata = cbind(tmin[1:365], wdf2[1:365])
+twcss = c() # Create empty array
 for(K in 1:8){
-  mydata=cbind(tmax[2:366], wdf2[2:366])
-  twcss[K] = kmeans(mydata, K)$tot.withinss 
+  mydata=cbind(tmax[1:365], wdf2[1:365])
+  twcss[K] = kmeans(mydata, K)$tot.withinss # Save twcss at index K
 }
-twcss
+twcss # 8 different twcss
 par(mar = c(4.5, 6, 2, 0.5))
 par(mfrow=c(1,2))
 plot(twcss/100000, type = 'o', lwd = 2,
@@ -1793,6 +1798,8 @@ axis(4, at = c(0, 45, 90, 135, 180, 225, 270, 315, 360),
      lab = c('N', 'NE', 'E', 'SE', 'S', 'SW',  'W', 'NW', 'N'))
 mtext('Wind Direction', side = 4, line =3)
 
+
+## Support Vector Machines
 #
 #
 #R plot Fig. 9.5: Maximum difference between two points
@@ -1800,8 +1807,8 @@ x = matrix(c(1, 1, 3, 3),
            ncol = 2, byrow = TRUE)#Two points
 y= c(-1, 1) #Two labels -1 and 1
 #Plot the figure and save it as a .eps file
-setEPS() 
-postscript("fig0905.eps", height=7, width=7)
+# setEPS() 
+# postscript("fig0905.eps", height=7, width=7)
 par(mar = c(4.5, 4.5, 2.0, 2.0))
 plot(x, col = y + 3, pch = 19, 
      xlim = c(-2, 6), ylim = c(-2, 6),
@@ -1838,6 +1845,29 @@ text(-1, 3.3, 'Negative Hyperplane',
      srt = -45, cex = 1.2, col = 2)
 dev.off()
 
+#
+#
+# SVM with two points
+x = matrix(c(1, 1, 3, 3), 
+           ncol = 2, byrow = TRUE)
+y = c(1, -1) # two categories 1 and -1
+
+library(e1071)
+dat = data.frame(x, y = as.factor(y))
+svm2P = svm(y ~ ., data = dat, 
+            kernel = "linear", cost = 10, 
+            scale = FALSE, 
+            type = 'C-classification')
+svm2P #This is the trained SVM
+
+# Find hyperplane, normal vector, and SV (wx + b = 0)
+w = t(svm2P$coefs) %*% svm2P$SV 
+w # [1,] -0.5 -0.5
+
+b = svm2P$rho
+b # [1] -2
+
+2/norm(w, type = "2")
 
 #
 #
@@ -1855,6 +1885,7 @@ svm3P = svm(y ~ ., data = dat,
             scale = FALSE, 
             type = 'C-classification')
 svm3P #This is the trained SVM
+
 xnew = matrix(c(0.5, 2.5, 4.5, 4), 
               ncol = 2, byrow = TRUE) #New data
 predict(svm3P, xnew) #prediction using the trained SVM
@@ -1865,9 +1896,11 @@ predict(svm3P, xnew) #prediction using the trained SVM
 w = t(svm3P$coefs) %*% svm3P$SV 
 w
 #[1,] -0.2758621 -0.6896552
+
 b = svm3P$rho
 b
 #[1] -2.241379
+
 2/norm(w, type ='2') #maximum margin of separation
 #[1] 2.692582
 
@@ -1876,9 +1909,11 @@ x2 = (b - w[1]*x1)/w[2]
 x2p = (1 + b - w[1]*x1)/w[2]
 x2m = (-1 + b - w[1]*x1)/w[2]
 x20 = (b - w[1]*x1)/w[2]
+
+
 #plot the SVM results
-setEPS() 
-postscript("fig0906.eps", height=7, width=7)
+# setEPS() 
+# postscript("fig0906.eps", height=7, width=7)
 par(mar = c(4.5, 4.5, 2.0, 2.0))
 plot(x, col = y + 3, pch = 19,
      xlim = c(0, 6), ylim = c(0, 6),
@@ -1909,7 +1944,7 @@ dev.off()
 
 #
 #
-#R plot Fig. 9.7: SVM for many points
+#--------R plot Fig. 9.7: SVM for many points---------
 #Training data x and y
 x = matrix(c(1, 6, 2, 8, 3, 7.5, 1, 8, 4, 9, 5, 9, 
              3, 7, 5, 9, 1, 5,
@@ -1921,6 +1956,7 @@ y= c(1, 1, 1, 1, 1, 1,
      2, 2, 2, 2, 2, 2 ,
      2, 2, 2, 2, 2)
 
+# Train SVM based on x & y
 library(e1071)
 dat = data.frame(x, y = as.factor(y))
 svmP = svm(y ~ ., data = dat, 
@@ -1928,30 +1964,36 @@ svmP = svm(y ~ ., data = dat,
            scale = FALSE, 
            type = 'C-classification')
 svmP
-#Number of Support Vectors:  3
+
+# Number of Support Vectors:  3
 svmP$SV #SVs are #x[9,], x[17,], x[19,]
 #9   1  5
 #17  6  5
 #19  2  2
 
 # Find SVM parameters: w, b, SV (wx+c=0)
-w = t(svmP$coefs) %*% svmP$SV 
 # In essence this finds the hyper plane that separates our points
+w = t(svmP$coefs) %*% svmP$SV 
 w
 #[1,] -0.39996 0.53328
+
 b <- svmP$rho
 b
 #[1] 1.266573
+
+# Maximum margin
 2/norm(w, type ='2')
-#[1] 3.0003 is the maximum margin
+#[1] 3.0003
+
 x1 = seq(0, 10, len = 31)
 x2 = (b - w[1]*x1)/w[2]
 x2p = (1 + b - w[1]*x1)/w[2]
 x2m = (-1 + b - w[1]*x1)/w[2]
 x20 = (b - w[1]*x1)/w[2]
-#plot the svm results
-setEPS() 
-postscript("fig0907.eps", height=7, width=7)
+
+# Plot the svm results
+# setEPS() 
+# postscript("fig0907.eps", height=7, width=7)
 par(mar = c(4.5, 4.5, 2.0, 2.0))
 plot(x, col = y + 9, pch = 19, cex =1.5,
      xlim = c(0, 10), ylim = c(0, 10),
@@ -1965,10 +2007,13 @@ axis(1, at = 0:10, tck = 1, lty = 3,
 lines(x1, x2p, lty = 2, col = 10)
 lines(x1, x2m, lty = 2, col = 11)
 lines(x1, x20, lwd = 1.5, col = 'purple')
+
+# Deg angle of the hyperplane
 thetasvm = atan(-w[1]/w[2])*180/pi
 thetasvm
-#[1] 36.8699 #36.9 deg angle of the hyperplane
-#linear equations for the hyperplanes
+#[1] 36.8699 #36.9
+
+# Linear equations for the hyperplanes
 delx = 1.4
 dely = delx * (-w[1]/w[2])
 text(5 + 2*delx, 6.5 + 2*dely, bquote(bold(w%.%x) - b == 0), 
@@ -1977,17 +2022,18 @@ text(5 - delx, 7.6 - dely, bquote(bold(w%.%x) - b == 1),
      srt = thetasvm, cex = 1.5, col = 10)
 text(5, 4.8, bquote(bold(w%.%x) - b == -1), 
      srt = thetasvm, cex = 1.5, col = 11)
-#normal direction of the hyperplanes
+
+# Normal direction of the hyperplanes
 arrows(2, 3.86, 2 + w[1], 4 + w[2], lwd = 2,
        angle = 15, length= 0.1, col = 'blue' )
 text(2 + w[1] + 0.4, 4 + w[2], bquote(bold(w)), 
      srt = thetasvm, cex = 1.5, col = 'blue')
 
-#new data points to be predicted
+# New data points to be predicted
 xnew = matrix(c(0.5, 2.5, 7, 2, 6, 9), 
               ncol = 2, byrow = TRUE)
 points(xnew, pch = 17, cex = 2)
-predict(svmP, xnew) #Prediction
+predict(svmP, xnew)
 #1 2 3 
 #2 2 1
 
@@ -1995,6 +2041,7 @@ for(i in 1:3){
   text(xnew[i,1], xnew[i,2] - 0.4 , 
        paste('Q',i), cex = 1.5)
 }
+
 dev.off()
 
 
@@ -2002,9 +2049,11 @@ dev.off()
 #
 #R plot Fig. 9.8: R.A. Fisher data of three iris species
 setwd('~/climstats')
+
 data(iris) #read the data already embedded in R
 dim(iris)
 #[1] 150   5
+
 iris[1:2,] # Check the first two rows of the data
 #    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
 #1          5.1         3.5          1.4         0.2  setosa
@@ -2015,8 +2064,8 @@ str(iris) # Check the structure of the data
 #$ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
 #$ Species     : Factor w/ 3 levels "setosa","versicolor",...
 
-setEPS() #Plot the data of 150 observations
-postscript("fig0908.eps",  width=7, height=5)
+# setEPS() #Plot the data of 150 observations
+# postscript("fig0908.eps",  width=7, height=5)
 par(mar= c(4.5, 4.5, 2.5, 0.2))
 plot(iris[,1], type = 'o', pch = 16, cex = 0.5, ylim = c(-1, 9), 
      xlab = 'Sorted order of the flowers for measurement', 
@@ -2026,26 +2075,28 @@ plot(iris[,1], type = 'o', pch = 16, cex = 0.5, ylim = c(-1, 9),
 lines(iris[,2], type = 'o', pch = 16, cex = 0.5, col=2)
 lines(iris[,3], type = 'o', pch = 16, cex = 0.5, col=3)
 lines(iris[,4], type = 'o', pch = 16, cex = 0.5, col=4)
-legend(0, 9.5, legend = c('Sepal length', 'Sepal width', 
+legend(-5, 9.5, legend = c('Sepal length', 'Sepal width', 
                           'Petal length', 'Petal width'), 
        col = 1:4, lty = 1, lwd = 2, bty = 'n', 
        y.intersp = 0.8, cex = 1.2)
 text(25, -1, 'Setosa 1-50', cex = 1.3)
 text(75, -1, 'Versicolor 51-100', cex = 1.3)
 text(125, -1, 'Virginica 101 - 150', cex = 1.3)
+
 dev.off()
 
 #
 #
 #R code of the RF experiment on the Fisher iris data 
-#install.packages("randomForest") 
+# install.packages("randomForest") 
 library(randomForest)
 #set.seed(8)  # run this line to get the same result
 #randomly select 120 observations as training data 
-train_id = sort(sample(1:150, 120, replace = FALSE))
 train_data = iris[train_id, ]
+
 dim(train_data)
 #[1] 120   5
+
 #use the remaining 30 as the new data for prediction
 new_data = iris[-train_id, ]
 dim(new_data)
@@ -2059,10 +2110,9 @@ classifyRF #output RF training result
 #Number of trees: 800
 #No. of variables tried at each split: 2
 
-
 #OOB estimate of  error rate: 4.17%
 #Confusion matrix:
-#  		setosa versicolor virginica class.error
+#  		      setosa versicolor virginica class.error
 #setosa         41          0         0  0.00000000
 #versicolor      0         34         2  0.05555556
 #virginica       0          3        40  0.06976744
@@ -2070,11 +2120,13 @@ classifyRF #output RF training result
 plot(classifyRF, 
      main='RF model error rate for each tree') 
 #plot the errors vs RF trees Fig. 9.9a
+
 #This plots the error rate data in the 
 #matrix named classifyRF$err.rate
 errRate = classifyRF$err.rate
 dim(errRate)
 #[1] 800   4
+
 #Fig. 9.9a is a plot for this matrix data
 #Fig. 9.9a can also be plotted by the following code
 tree_num = 1:800
@@ -2102,6 +2154,7 @@ classifyRF$importance #classifyRF$ has many outputs
 #Sepal.Width          1.507188
 #Petal.Length        31.075960
 #Petal.Width         38.169763
+
 #plot the importance result Fig. 9.9b
 varImpPlot(classifyRF, sort = FALSE, 
            lwd = 1.5, pch = 16,
@@ -2193,8 +2246,10 @@ CSS = c(90,20,40,50,50,80)
 Recruited = c(1,0,0,0,1,1)
 # Here, you will combine multiple columns or features into a single set of data
 df = data.frame(TKS, CSS, Recruited)
+df
 
 require(neuralnet) # load 'neuralnet' library
+
 # fit neural network
 set.seed(123)
 nn = neuralnet(Recruited ~ TKS + CSS, data = df, 
@@ -2252,7 +2307,7 @@ data(iris) #150-by-5 iris data
 iris$setosa = iris$Species == "setosa" 
 iris$virginica = iris$Species == "virginica"
 iris$versicolor = iris$Species == "versicolor"
-p = 0.5 # assign 50% of data for training
+p = 0.9 # assign 50% of data for training
 train.idx = sample(x = nrow(iris), size = p*nrow(iris))
 train = iris[train.idx,] #determine the training data
 test = iris[-train.idx,] #determine the test data
